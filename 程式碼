@@ -3,42 +3,19 @@
 #include <IRremoteInt.h>
 #include <ir_Lego_PF_BitStreamEncoder.h>
 
-const int irReceiverPin = 2;
-IRrecv irrecv(irReceiverPin);
-decode_results results;
+const int buttonPin = 4;
+IRsend irsend;
 void setup() {
   Serial.begin(9600);
-  irrecv.enableIRIn();
-}
-void showIRProtocol(decode_results *results){
-  Serial.print("Protocol: ");
-  switch(results->decode_type){
-    case NEC:
-      Serial.print("NEC ");
-      break;
-    case SONY:
-      Serial.print("SONY ");
-      break;
-    case RC5:
-      Serial.print("RC5 ");
-      break;
-    case RC6:
-      Serial.print("RC6 ");
-      break;
-    default:
-      Serial.print("Unknown encoding ");
-  }
-  Serial.print(", irCode: ");
-  Serial.print(results->value,HEX);
-  Serial.print(", bits: ");
-  Serial.print(results->bits);  
+  pinMode(buttonPin,INPUT);
 }
 
 void loop() {
-  if(irrecv.decode(&results))
+  int buttonState;
+  buttonState = digitalRead(buttonPin);
+  if(buttonState == HIGH)
   {
-    showIRProtocol(&results);
-    irrecv.resume();
-    Serial.println();
+    Serial.print(buttonState);
+    irsend.sendNEC(0x4FB48B7, 32);
   }
 }
